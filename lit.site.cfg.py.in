@@ -1,0 +1,8 @@
+config.clang = r"@CLANG@"
+config.opt = r"@OPT@"
+config.llc = r"@LLC@"
+config.filecheck = r"@FILECHECK@"
+config.suite_source_root = r"@CMAKE_CURRENT_SOURCE_DIR@"
+config.suite_exec_root = r"@CMAKE_CURRENT_BINARY_DIR@"
+config.enable_pseudo_tests = "@ENABLE_PSEUDO_TESTS@" == "ON"
+lit_config.load_config(config, config.suite_source_root + "/lit.cfg.py")

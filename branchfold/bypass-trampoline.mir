@@ -1,0 +1,32 @@
+# RUN: %llc -mtriple=amdgcn -mcpu=gfx1150 -verify-machineinstrs -run-pass=tailduplication %s -o - | %FileCheck %s -DOP=S_CBRANCH_CDBGSYS_OR_USER
+
+# CHECK-LABEL: name: {{ *}}bypass_trampoline
+# CHECK: body:
+# CHECK: [[OP]] %bb.{{[0-9]+}}
+# CHECK-NOT: [[OP]]
+# CHECK: ...
+
+---
+name: bypass_trampoline
+tracksRegLiveness: true
+body: |
+  bb.0:
+    successors: %bb.1, %bb.2
+
+    S_CBRANCH_CDBGSYS_OR_USER %bb.2
+
+  bb.1:
+    ; Keep this block above the tail-duplication size threshold.
+    S_NOP 0
+    S_NOP 0
+    S_NOP 0
+    S_NOP 0
+    S_NOP 0
+    S_NOP 0
+    S_ENDPGM 0
+
+  bb.2:
+    successors: %bb.1
+
+    S_BRANCH %bb.1
+...

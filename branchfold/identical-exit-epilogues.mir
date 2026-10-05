@@ -1,0 +1,25 @@
+# RUN: %llc -mtriple=amdgcn -mcpu=gfx1150 -verify-machineinstrs -run-pass=branch-folder %s -o - | %FileCheck %s -DOP=S_CBRANCH_CDBGSYS_OR_USER
+
+# CHECK-LABEL: name: {{ *}}identical_exit_epilogues
+# CHECK: body:
+# CHECK: [[OP]] %bb.{{[0-9]+}}
+# CHECK-NOT: [[OP]]
+# CHECK: ...
+
+---
+name: identical_exit_epilogues
+tracksRegLiveness: true
+body: |
+  bb.0:
+    successors: %bb.2, %bb.1
+
+    S_CBRANCH_CDBGSYS_OR_USER %bb.2
+
+  bb.1:
+    S_WAITCNT 0
+    S_ENDPGM 0
+
+  bb.2:
+    S_WAITCNT 0
+    S_ENDPGM 0
+...
